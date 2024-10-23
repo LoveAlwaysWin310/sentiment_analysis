@@ -7,7 +7,6 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import KFold
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import matplotlib.pyplot as plt
-from statsmodels.tsa.arima.model import ARIMA
 
 
 # 定义注意力层
@@ -108,14 +107,6 @@ def predict_future(model, initial_seq, num_days, scaler):
     predictions_rounded = np.rint(predictions).astype(int)
     return predictions_rounded
 
-file_path = 'comment_count.csv'
-data = pd.read_csv(file_path, parse_dates=['date'], index_col='date')
-model = ARIMA(data['num'], order=(5, 1, 0))
-model_fit = model.fit()
-forecast = model_fit.forecast(steps=5)
-forecast_rounded = forecast.round().astype(int)
-forecast_list = forecast_rounded.tolist()
-
 # 加载和预处理数据
 df = pd.read_csv('comment_count.csv')
 df['date'] = pd.to_datetime(df['date'])
@@ -198,5 +189,5 @@ last_seq = torch.FloatTensor(df['num_normalized'].values[-seq_length:]).view(1, 
 num_days = 5  # 想要预测的天数
 future_predictions = predict_future(model, last_seq, num_days, scaler)
 
-print(f"未来整数预测: {forecast_list}")
+print(f"未来整数预测: {future_predictions}")
 
